@@ -18,7 +18,8 @@ name: Apps Script deploy (shared)
 # Properties such as tokens, so a stray new copy would be wrong).
 #
 # Secret: CLASPRC_JSON, the contents of ~/.clasprc.json after `clasp login`
-# as ncssm.yac.yakkety@gmail.com. An organization secret, passed in by the
+# as ncssm.yac.yakkety@gmail.com. A repository secret in each caller (org
+# secrets don't reach private repos on the free plan), passed in by the
 # caller. Never printed, and deleted from the runner at the end.
 on:
   workflow_call:
@@ -98,13 +99,13 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "$CLASPRC" ]; then
-            echo "::error::The CLASPRC_JSON secret is missing or not passed in. See ncssm-yac/yac-apps-script-deploy README.md."
+            echo "::error::The CLASPRC_JSON secret is missing in this repo, or not passed in. See ncssm-yac/yac-apps-script-deploy README.md."
             exit 1
           fi
           umask 077
           printf '%s' "$CLASPRC" > "$HOME/.clasprc.json"
           if ! clasp --json list-scripts > "$RUNNER_TEMP/scripts.json" 2> "$RUNNER_TEMP/err.txt"; then
-            echo "::error::clasp could not sign in. The saved login has probably expired or been revoked: run clasp login again as ncssm.yac.yakkety@gmail.com and replace the CLASPRC_JSON organization secret (yac-apps-script-deploy README.md)."
+            echo "::error::clasp could not sign in. The saved login has probably expired or been revoked: run clasp login again as ncssm.yac.yakkety@gmail.com and replace the CLASPRC_JSON repository secret in every caller (yac-apps-script-deploy README.md)."
             exit 1
           fi
 

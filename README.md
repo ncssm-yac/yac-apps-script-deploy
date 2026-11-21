@@ -52,16 +52,18 @@ Callers today: `yac-birthdays` (YAC Birthday Trigger), `yac-notes-trigger`
 
 1. **Let other repos call this one.** This repo is private, so: Settings →
    Actions → General → **Access** → *Accessible from repositories in the
-   'ncssm-yac' organization*.
-2. **Organization secret `CLASPRC_JSON`**: `ncssm-yac` Settings → Secrets and
-   variables → Actions → New organization secret. Value: the contents of
+   'ncssm-yac' organization*. If that option isn't offered on the
+   organization's plan, make this repo public instead: it holds no secret,
+   ID or member data, only the workflow.
+2. **Repository secret `CLASPRC_JSON` in each caller** (Settings → Secrets
+   and variables → Actions → New repository secret). Value: the contents of
    `~/.clasprc.json` after `clasp login` as `ncssm.yac.yakkety@gmail.com`.
-   Repository access: **selected repositories**, only the callers above. Never
-   a repo whose workflows run Claude (such as `yakkety`).
-3. Delete any **repository** secret with the same name in a caller
-   (`yac-birthdays` had one): a repo secret overrides the org one, so a later
-   renewal would miss it.
-4. **Apps Script API on** for the yakkety account:
+   It is a repository secret, not an organization one, because on the
+   organization's current (free) plan organization secrets reach only public
+   repos, and the callers are private. Never add it to a repo whose
+   workflows run Claude (such as `yakkety`). Every caller holds the same
+   value, so renew them together (below).
+3. **Apps Script API on** for the yakkety account:
    script.google.com/home/usersettings (done Nov 2026).
 
 ## When the sign-in breaks
@@ -74,8 +76,8 @@ npx.cmd @google/clasp login
 Get-Content $HOME\.clasprc.json -Raw | Set-Clipboard
 ```
 
-Paste it as the new value of the `CLASPRC_JSON` organization secret, then
-clear the clipboard (`Set-Clipboard -Value " "`) and delete
+Paste it as the new value of the `CLASPRC_JSON` repository secret in
+**every caller** (the list under *Using it*), then clear the clipboard (`Set-Clipboard -Value " "`) and delete
 `$HOME\.clasprc.json`.
 
 ## Tests
