@@ -50,19 +50,20 @@ Callers today: `yac-birthdays` (YAC Birthday Trigger), `yac-notes-trigger`
 
 ## Setup (one time, owner)
 
-1. **Let other repos call this one.** This repo is private, so: Settings →
-   Actions → General → **Access** → *Accessible from repositories in the
-   'ncssm-yac' organization*. If that option isn't offered on the
-   organization's plan, make this repo public instead: it holds no secret,
-   ID or member data, only the workflow.
-2. **Repository secret `CLASPRC_JSON` in each caller** (Settings → Secrets
-   and variables → Actions → New repository secret). Value: the contents of
-   `~/.clasprc.json` after `clasp login` as `ncssm.yac.yakkety@gmail.com`.
-   It is a repository secret, not an organization one, because on the
-   organization's current (free) plan organization secrets reach only public
-   repos, and the callers are private. Never add it to a repo whose
-   workflows run Claude (such as `yakkety`). Every caller holds the same
-   value, so renew them together (below).
+1. **Make this repo and every caller public.** Organization secrets reach
+   only public repos on the organization's current (free) plan, and a public
+   repo's workflow can be called by any repo, with no Access setting. Before
+   a repo goes public, check that its code, history and Actions logs hold no
+   member data, tokens or webhook URLs (the YAC tool repos keep those in
+   Sheets and secrets by rule).
+2. **One organization secret, `CLASPRC_JSON`**: `ncssm-yac` Settings →
+   Secrets and variables → Actions → New organization secret. Value: the
+   contents of `~/.clasprc.json` after `clasp login` as
+   `ncssm.yac.yakkety@gmail.com`. Repository access: **selected
+   repositories**, only the callers. A new Apps Script repo just gets ticked
+   in that list. Never tick a repo whose workflows run Claude (such as
+   `yakkety`). A caller must not have its own repository secret with the
+   same name: it would override the org one and be missed at renewal.
 3. **Apps Script API on** for the yakkety account:
    script.google.com/home/usersettings (done Nov 2026).
 
@@ -76,8 +77,8 @@ npx.cmd @google/clasp login
 Get-Content $HOME\.clasprc.json -Raw | Set-Clipboard
 ```
 
-Paste it as the new value of the `CLASPRC_JSON` repository secret in
-**every caller** (the list under *Using it*), then clear the clipboard (`Set-Clipboard -Value " "`) and delete
+Paste it as the new value of the `CLASPRC_JSON` organization secret, then
+clear the clipboard (`Set-Clipboard -Value " "`) and delete
 `$HOME\.clasprc.json`.
 
 ## Tests
